@@ -1,0 +1,82 @@
+.games-table-container {
+  overflow-x: auto;
+  background: #1a1a1a;
+  border-radius: clamp(6px, 1.5vw, 8px);
+  border: 1px solid #2a2a2a;
+  -webkit-overflow-scrolling: touch;
+}
+
+.games-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 500px;
+}
+
+.games-table th,
+.games-table td {
+  padding: clamp(8px, 2vw, 12px) clamp(10px, 2vw, 16px);
+  text-align: left;
+  font-size: clamp(0.75rem, 2vw, 0.875rem);
+}
+
+.games-table th {
+  font-weight: 500;
+  color: #666;
+  font-size: clamp(0.625rem, 1.5vw, 0.75rem);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid #2a2a2a;
+  white-space: nowrap;
+}
+
+.games-table tbody tr {
+  border-bottom: 1px solid #222;
+}
+
+.games-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.games-table tbody tr:hover {
+  background-color: #1f1f1f;
+}
+
+.result-badge {
+  padding: clamp(3px, 0.5vw, 4px) clamp(6px, 1.5vw, 10px);
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: clamp(0.625rem, 1.5vw, 0.75rem);
+  white-space: nowrap;
+}
+
+.result-white {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+.result-black {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.result-draw {
+  background: rgba(136, 136, 136, 0.15);
+  color: #888;
+}
+
+.game-link {
+  color: #888;
+  text-decoration: none;
+  font-size: clamp(0.75rem, 2vw, 0.875rem);
+}
+
+.game-link:hover {
+  color: #fff;
+}
+
+.no-games {
+  text-align: center;
+  padding: clamp(24px, 6vw, 40px);
+  color: #666;
+  font-size: clamp(0.8rem, 2vw, 1rem);
+}

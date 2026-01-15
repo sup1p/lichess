@@ -1,0 +1,184 @@
+:root {
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  background-color: #0f0f0f;
+  color: #e5e7eb;
+  min-height: 100vh;
+  font-size: clamp(14px, 1.5vw, 16px);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+.layout {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: clamp(12px, 4vw, 24px);
+  min-height: 100vh;
+  width: 100%;
+}
+
+.layout.centered {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Auth Screen */
+.auth-container {
+  text-align: center;
+  padding: clamp(24px, 6vw, 48px);
+  background: #1a1a1a;
+  border-radius: clamp(12px, 2vw, 16px);
+  border: 1px solid #2a2a2a;
+  max-width: 400px;
+  width: 100%;
+}
+
+.auth-container h1 {
+  margin: 0 0 clamp(4px, 1vw, 8px);
+  font-size: clamp(1.25rem, 5vw, 2rem);
+}
+
+.auth-container p {
+  margin: 0 0 clamp(20px, 5vw, 32px);
+  color: #888;
+  font-size: clamp(0.8rem, 2.5vw, 1rem);
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(8px, 2vw, 16px);
+  padding: clamp(12px, 2vw, 16px) 0;
+  margin-bottom: clamp(16px, 3vw, 24px);
+  border-bottom: 1px solid #2a2a2a;
+  flex-wrap: wrap;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: clamp(1rem, 3vw, 1.25rem);
+}
+
+/* Buttons */
+button {
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+button.primary {
+  background: #fff;
+  color: #0f0f0f;
+  border: none;
+  padding: clamp(10px, 2vw, 12px) clamp(18px, 4vw, 24px);
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: clamp(0.8rem, 2vw, 0.875rem);
+}
+
+button.primary:hover {
+  background: #e5e5e5;
+}
+
+button.secondary {
+  background: transparent;
+  color: #888;
+  border: 1px solid #333;
+  padding: clamp(6px, 1.5vw, 8px) clamp(12px, 2vw, 16px);
+  border-radius: 6px;
+  font-size: clamp(0.75rem, 2vw, 0.875rem);
+  white-space: nowrap;
+}
+
+button.secondary:hover {
+  background: #1a1a1a;
+  color: #fff;
+  border-color: #444;
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Cards */
+.card {
+  margin-top: clamp(12px, 3vw, 20px);
+  background: #1a1a1a;
+  border-radius: clamp(8px, 2vw, 12px);
+  padding: clamp(12px, 3vw, 20px);
+  border: 1px solid #2a2a2a;
+}
+
+/* Games Section */
+.games-section {
+  margin-top: clamp(16px, 4vw, 24px);
+}
+
+.games-section h2 {
+  margin: 0 0 clamp(12px, 2vw, 16px);
+  font-size: clamp(1rem, 2.5vw, 1.125rem);
+  font-weight: 600;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(8px, 2vw, 16px);
+  margin-top: clamp(12px, 3vw, 20px);
+  padding: clamp(12px, 2vw, 16px) 0;
+}
+
+.pagination-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.pagination-pages {
+  color: #fff;
+  font-size: clamp(0.75rem, 2vw, 0.875rem);
+  font-weight: 500;
+}
+
+.pagination-total {
+  color: #666;
+  font-size: clamp(0.625rem, 1.5vw, 0.75rem);
+}
+
+.pagination button {
+  background: #1a1a1a;
+  color: #fff;
+  border: 1px solid #333;
+  padding: clamp(8px, 2vw, 10px) clamp(12px, 3vw, 20px);
+  border-radius: 8px;
+  font-size: clamp(0.75rem, 2vw, 0.875rem);
+  font-weight: 500;
+  min-width: clamp(70px, 15vw, 100px);
+}
+
+.pagination button:hover:not(:disabled) {
+  background: #252525;
+  border-color: #444;
+}
+
+.pagination button:disabled {
+  background: #1a1a1a;
+  color: #444;
+  border-color: #222;
+}
+    font-size: 0.6875rem;
+  }
+}
