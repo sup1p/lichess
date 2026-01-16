@@ -7,12 +7,11 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     secret_key: str
-    lichess_client_id: str = "dev-client-id"
-    # client_secret is optional when using PKCE flow
-    lichess_client_secret: Optional[str] = None
-    lichess_redirect_uri: HttpUrl = HttpUrl("http://localhost:8000/api/auth/callback")
-    database_url: str = "postgresql+asyncpg://lichess:lichess@db:5432/lichess"
-    redis_url: str = "redis://redis:6379/0"
+    lichess_client_id: str
+    lichess_redirect_uri: HttpUrl
+    database_url: str
+    redis_url: str
+    
     redirect_url: str
 
     celery_broker_url: str = "redis://redis:6379/0"
