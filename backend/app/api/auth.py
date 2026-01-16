@@ -1,11 +1,10 @@
+import logging
 import secrets
-from datetime import datetime, timedelta, timezone
 from typing import Optional
 from urllib.parse import urlencode
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
 from fastapi.responses import RedirectResponse
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.auth import create_access_token, get_current_user
@@ -13,7 +12,10 @@ from app.core.config import get_settings
 from app.core.db import get_session
 from app.services.lichess import exchange_code, generate_pkce, get_account
 from app.models.models import User
+from app.services import crud
+from app.tasks import sync_all_user_games
 
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/auth", tags=["auth"])
 settings = get_settings()
 
@@ -21,6 +23,7 @@ settings = get_settings()
 @router.get("/login")
 async def login_via_lichess() -> RedirectResponse:
     """Initiate OAuth login flow with Lichess."""
+    logger.info("Initiating OAuth login flow")
     code_verifier, code_challenge = generate_pkce()
     state = secrets.token_urlsafe(32)
     
@@ -40,7 +43,7 @@ async def login_via_lichess() -> RedirectResponse:
         key="oauth_verifier",
         value=f"{state}:{code_verifier}",
         httponly=True,
-        secure=settings.app_env != "dev",
+        secure=False,
         samesite="lax",
         max_age=600,
     )
@@ -76,38 +79,27 @@ async def auth_callback(
     
     lichess_id = account.get("id")
     username = account.get("username")
+    logger.info(f"OAuth callback received for user: {username}")
 
-    result = await session.execute(select(User).where(User.lichess_id == lichess_id))
-    user = result.scalars().first()
+    # Get or create user
+    user = await crud.get_user_by_lichess_id(session, lichess_id)
     
-    expires_at = None
-    if token.expires_in:
-        expires_at = datetime.now(timezone.utc) + timedelta(seconds=token.expires_in)
-
     if user:
-        user.username = username  # Update username in case it changed
-        user.access_token = token.access_token
-        user.refresh_token = token.refresh_token
-        user.token_type = token.token_type
-        user.scope = token.scope
-        user.expires_at = expires_at
-        user.updated_at = datetime.now(timezone.utc)
-        await session.flush()
+        user = await crud.update_user_tokens(session, user, username, token)
+        is_new_user = False
+        logger.info(f"Existing user logged in: {username}")
     else:
-        user = User(
-            lichess_id=lichess_id,
-            username=username,
-            access_token=token.access_token,
-            refresh_token=token.refresh_token,
-            token_type=token.token_type,
-            scope=token.scope,
-            expires_at=expires_at,
-        )
-        session.add(user)
-        await session.flush()
+        user = await crud.create_user(session, lichess_id, username, token)
+        is_new_user = True
+        logger.info(f"New user created: {username}")
     
     await session.commit()
     await session.refresh(user)
+    
+    # Trigger background task to sync all games for new users
+    if is_new_user:
+        logger.info(f"Triggering sync_all_user_games for user_id={user.id}")
+        sync_all_user_games.delay(user.id)
 
     jwt_token = create_access_token(user.id, user.username)
 
@@ -117,7 +109,7 @@ async def auth_callback(
         key="access_token",
         value=jwt_token,
         httponly=True,
-        secure=settings.app_env != "dev",
+        secure=False,
         samesite="lax",
         max_age=60 * 60 * 24 * 7,
     )

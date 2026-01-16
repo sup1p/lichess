@@ -13,7 +13,7 @@ celery_app = Celery(
 celery_app.conf.beat_schedule = {
     "sync-games": {
         "task": "app.tasks.sync_recent_games",
-        "schedule": 60.0 * 5,
+        "schedule": 60.0,
     }
 }
 

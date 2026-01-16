@@ -1,6 +1,7 @@
 import base64
 import hashlib
 import json
+import logging
 import secrets
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
@@ -11,6 +12,7 @@ from app.core.config import get_settings
 from app.schemas.schemas import TokenPayload
 
 
+logger = logging.getLogger(__name__)
 settings = get_settings()
 
 LICHESS_BASE = "https://lichess.org"
@@ -28,6 +30,7 @@ def generate_pkce() -> tuple[str, str]:
 
 
 async def exchange_code(code: str, code_verifier: str) -> TokenPayload:
+    logger.info("Exchanging OAuth code for access token")
     data = {
         "grant_type": "authorization_code",
         "client_id": settings.lichess_client_id,
@@ -79,26 +82,41 @@ async def get_games(
     access_token: str,
     max_games: int = 50,
     perf_type: Optional[str] = None,
-    page: int = 1,
-    page_size: int = 20,
+    since: Optional[int] = None,
+    until: Optional[int] = None,
 ) -> List[Dict[str, Any]]:
     """Fetch games from Lichess API. Returns a list of game objects.
+    
+    Args:
+        username: Lichess username
+        access_token: OAuth access token
+        max_games: Maximum number of games to fetch
+        perf_type: Filter by game type (bullet, blitz, rapid, etc.)
+        since: Fetch games played after this timestamp (ms)
+        until: Fetch games played before this timestamp (ms)
     
     Note: Lichess API returns NDJSON (newline-delimited JSON), not a JSON array.
     """
     params: Dict[str, Any] = {
         "max": max_games,
         "pgnInJson": "true",
+        "opening": "true",
     }
     if perf_type:
         params["perfType"] = perf_type
+    if since:
+        params["since"] = since
+    if until:
+        params["until"] = until
+    
+    logger.info(f"Fetching games for {username}: max={max_games}, since={since}, until={until}")
     
     headers = {
         "Authorization": f"Bearer {access_token}",
         "Accept": "application/x-ndjson",
     }
     
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(timeout=30.0) as client:
         resp = await client.get(
             GAMES_URL_TEMPLATE.format(username=username),
             params=params,
@@ -111,4 +129,5 @@ async def get_games(
         for line in resp.text.strip().split("\n"):
             if line:
                 games.append(json.loads(line))
+        logger.info(f"Fetched {len(games)} games for {username}")
         return games
